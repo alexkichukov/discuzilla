@@ -1,8 +1,6 @@
-﻿using Data.Models;
-
-namespace ApplicationService.DTOs
+﻿namespace ApplicationService.DTOs
 {
-	public class LoginUserDTO : BaseDTO
+	public class LoginUserDTO
 	{
 		public string? Username { get; set; }
 		public string? Password { get; set; }
