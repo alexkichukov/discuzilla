@@ -1,7 +1,8 @@
 ﻿namespace ApplicationService.DTOs
 {
-	public class UserDTO : BaseDTO
+	public class UserDTO
 	{
+		public int ID { get; set; }
 		public string? Username { get; set; }
 		public string? Email { get; set; }
 		public decimal Points { get; set; }

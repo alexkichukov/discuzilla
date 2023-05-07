@@ -1,11 +1,12 @@
 ﻿using ApplicationService.DTOs;
+using ApplicationService.Interfaces;
 using Data.Models;
 using Repository.Implementations;
 using BC = BCrypt.Net.BCrypt;
 
 namespace ApplicationService.Implementations
 {
-    public class UserManagementService
+    public class UserService : IUserService
     {
         public List<UserDTO> GetAll()
         {

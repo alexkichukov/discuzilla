@@ -1,7 +1,8 @@
 ﻿namespace ApplicationService.DTOs
 {
-	public class PostDTO : BaseDTO
+	public class PostDTO
 	{
+		public int ID { get; set; }
 		public string? Title { get; set; }
 		public string? Body { get; set; }
 		public virtual ICollection<CommentDTO>? Comments { get; set; }
