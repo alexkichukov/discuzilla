@@ -17,6 +17,7 @@ namespace ApplicationService.Implementations
                 foreach (User user in unitOfWork.UserRepository.Get())
                 {
                     UserDTO userDTO = new();
+                    userDTO.ID = user.ID;
                     userDTO.Username = user.Username;
                     userDTO.Points = user.Points;
                     userDTO.Email = user.Email;
@@ -35,6 +36,14 @@ namespace ApplicationService.Implementations
 
             using (UnitOfWork unitOfWork = new())
             {
+                // Check if user with username or email exists
+                User? alreadyRegisteredUser = unitOfWork.UserRepository.Get(u => u.Email == registerUserDTO.Email || u.Username == registerUserDTO.Username).FirstOrDefault();
+                if (alreadyRegisteredUser != null)
+                {
+                    throw new Exception("User already registered.");
+                }
+
+                // Add new user
                 User user = new();
                 user.Username = registerUserDTO.Username;
                 user.Email = registerUserDTO.Email;
@@ -43,6 +52,7 @@ namespace ApplicationService.Implementations
                 unitOfWork.UserRepository.Insert(user);
                 unitOfWork.Save();
 
+                userDTO.ID = user.ID;
                 userDTO.Username = user.Username;
                 userDTO.Email = user.Email;
                 userDTO.Points = user.Points;
@@ -65,6 +75,7 @@ namespace ApplicationService.Implementations
 
                 if (BC.Verify(loginUserDTO.Password, user.Password))
                 {
+                    userDTO.ID = user.ID;
                     userDTO.Username = user.Username;
                     userDTO.Email = user.Email;
                     userDTO.Points = user.Points;
@@ -88,6 +99,7 @@ namespace ApplicationService.Implementations
 
                 if (user == null) throw new Exception("No such user found");
 
+                userDTO.ID = user.ID;
                 userDTO.Username = user.Username;
                 userDTO.Email = user.Email;
                 userDTO.Points = user.Points;
