@@ -6,12 +6,24 @@ namespace Data.Models
     public class Comment : BaseEntity
     {
         [Required]
-        public string? Body { get; set; }
+        public string Body { get; set; } = null!;
+        public int PostID { get; set; }
+        public virtual Post Post { get; set; } = null!;
+        public int UserID { get; set; }
+        public virtual User User { get; set; } = null!;
+        public virtual ICollection<CommentLike> Likes { get; set; } = null!;
 
-        public virtual ICollection<User>? Likes { get; set; }
+        public Comment() : base()
+        {
+            Likes = new List<CommentLike>();
+        }
+    }
 
-        public virtual User? Author { get; set; }
-
-        public virtual Post? Post { get; set; }
+    public class CommentLike : BaseEntity
+    {
+        public int CommentID { get; set; }
+        public int UserID { get; set; }
+        public virtual User User { get; set; } = null!;
+        public virtual Comment Comment { get; set; } = null!;
     }
 }

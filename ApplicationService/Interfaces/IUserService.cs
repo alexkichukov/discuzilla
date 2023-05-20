@@ -9,5 +9,6 @@ namespace ApplicationService.Interfaces
         public UserDTO Login(LoginUserDTO loginUserDTO);
         public UserDTO GetByID(int ID);
         public bool DeleteUser(int ID);
+        public void CreatePost();
     }
 }

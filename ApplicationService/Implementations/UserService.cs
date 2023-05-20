@@ -16,11 +16,7 @@ namespace ApplicationService.Implementations
             {
                 foreach (User user in unitOfWork.UserRepository.Get())
                 {
-                    UserDTO userDTO = new();
-                    userDTO.Username = user.Username;
-                    userDTO.Points = user.Points;
-                    userDTO.Email = user.Email;
-                    users.Add(userDTO);
+                    users.Add(UserDTO.FromUser(user));
                 }
             }
 
@@ -31,21 +27,30 @@ namespace ApplicationService.Implementations
         {
             if (!registerUserDTO.Validate()) throw new Exception("Invalid DTO");
 
-            UserDTO userDTO = new();
+            UserDTO userDTO;
 
             using (UnitOfWork unitOfWork = new())
             {
-                User user = new();
-                user.Username = registerUserDTO.Username;
-                user.Email = registerUserDTO.Email;
-                user.Points = 0;
-                user.Password = BC.HashPassword(registerUserDTO.Password);
+                // Check if user with username or email exists
+                User? alreadyRegisteredUser = unitOfWork.UserRepository.Get(u => u.Email == registerUserDTO.Email || u.Username == registerUserDTO.Username).FirstOrDefault();
+                if (alreadyRegisteredUser != null)
+                {
+                    throw new Exception("User already registered.");
+                }
+
+                // Add new user
+                User user = new()
+                {
+                    Username = registerUserDTO.Username,
+                    Email = registerUserDTO.Email ?? "",
+                    Points = 0,
+                    Password = BC.HashPassword(registerUserDTO.Password)
+                };
                 unitOfWork.UserRepository.Insert(user);
                 unitOfWork.Save();
 
-                userDTO.Username = user.Username;
-                userDTO.Email = user.Email;
-                userDTO.Points = user.Points;
+                // Create DTO from user
+                userDTO = UserDTO.FromUser(user);
             }
 
             return userDTO;
@@ -55,7 +60,7 @@ namespace ApplicationService.Implementations
         {
             if (!loginUserDTO.Validate()) throw new Exception("Invalid DTO");
 
-            UserDTO userDTO = new();
+            UserDTO userDTO;
 
             using (UnitOfWork unitOfWork = new())
             {
@@ -63,16 +68,8 @@ namespace ApplicationService.Implementations
 
                 if (user == null) throw new Exception("No such user found");
 
-                if (BC.Verify(loginUserDTO.Password, user.Password))
-                {
-                    userDTO.Username = user.Username;
-                    userDTO.Email = user.Email;
-                    userDTO.Points = user.Points;
-                }
-                else
-                {
-                    throw new Exception("Incorrect password");
-                }
+                if (BC.Verify(loginUserDTO.Password, user.Password)) userDTO = UserDTO.FromUser(user);
+                else throw new Exception("Incorrect password");
             }
 
             return userDTO;
@@ -80,7 +77,7 @@ namespace ApplicationService.Implementations
 
         public UserDTO GetByID(int ID)
         {
-            UserDTO userDTO = new();
+            UserDTO userDTO;
 
             using (UnitOfWork unitOfWork = new())
             {
@@ -88,9 +85,7 @@ namespace ApplicationService.Implementations
 
                 if (user == null) throw new Exception("No such user found");
 
-                userDTO.Username = user.Username;
-                userDTO.Email = user.Email;
-                userDTO.Points = user.Points;
+                userDTO = UserDTO.FromUser(user);
             }
 
             return userDTO;

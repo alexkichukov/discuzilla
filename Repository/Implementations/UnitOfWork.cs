@@ -9,6 +9,8 @@ namespace Repository.Implementations
         private GenericRepository<User> userRepository;
         private GenericRepository<Post> postRepository;
         private GenericRepository<Comment> commentRepository;
+        private GenericRepository<PostLike> postLikesRepository;
+        private GenericRepository<CommentLike> commentLikesRepository;
 
         public GenericRepository<User> UserRepository
         {
@@ -44,6 +46,30 @@ namespace Repository.Implementations
                     this.commentRepository = new GenericRepository<Comment>(context);
                 }
                 return commentRepository;
+            }
+        }
+        public GenericRepository<PostLike> PostLikesRepository
+        {
+            get
+            {
+
+                if (this.postLikesRepository == null)
+                {
+                    this.postLikesRepository = new GenericRepository<PostLike>(context);
+                }
+                return postLikesRepository;
+            }
+        }
+        public GenericRepository<CommentLike> CommentLikesRepository
+        {
+            get
+            {
+
+                if (this.commentLikesRepository == null)
+                {
+                    this.commentLikesRepository = new GenericRepository<CommentLike>(context);
+                }
+                return commentLikesRepository;
             }
         }
 
