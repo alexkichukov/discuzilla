@@ -1,5 +1,5 @@
 ﻿using ApplicationService.Interfaces;
-using ApplicationService.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIGateway.Endpoints
 {
@@ -7,17 +7,40 @@ namespace APIGateway.Endpoints
     {
         public static void UseUserEndpoints(this IEndpointRouteBuilder app)
         {
-            // GET All Users
-            app.MapGet("users", (IUserService _userService) => {
+            // Get all users
+            app.MapGet("users", [Authorize] (IUserService _userService) =>
+            {
                 var users = _userService.GetAll();
-                return users;
-            }).WithName("GetUsers");
+                return Results.Ok(users);
+            });
 
-            // GET User
-            app.MapGet("user/{id:int}", (IUserService _userService, int id) => {
-                var user = _userService.GetByID(id);
-                return user;
-            }).WithName("GetUser");
+            // Get user by id
+            app.MapGet("user/{id:int}", [Authorize] (IUserService _userService, int id) =>
+            {
+                try
+                {
+                    var user = _userService.GetByID(id);
+                    return Results.Ok(user);
+                }
+                catch (Exception ex)
+                {
+                    return Results.NotFound(ex.Message);
+                }
+            });
+
+            // Get user by username
+            app.MapGet("user/{username}", [Authorize] (IUserService _userService, string username) =>
+            {
+                try
+                {
+                    var user = _userService.GetByUsername(username);
+                    return Results.Ok(user);
+                }
+                catch (Exception ex)
+                {
+                    return Results.NotFound(ex.Message);
+                }
+            });
         }
     }
 }

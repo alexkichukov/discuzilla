@@ -1,9 +1,7 @@
 using APIGateway.Endpoints;
-using APIGateway.Extensions;
 using ApplicationService.Implementations;
 using ApplicationService.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -12,6 +10,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddSingleton<IPostService, PostService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
 {
     o.TokenValidationParameters = new TokenValidationParameters
@@ -45,6 +44,7 @@ app.UseAuthorization();
 
 // Setup endpoints
 app.UseUserEndpoints();
+app.UsePostEndpoints();
 app.UseAuthEndpoints(builder.Configuration);
 
 app.Run();

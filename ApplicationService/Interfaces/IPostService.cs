@@ -2,8 +2,10 @@
 
 namespace ApplicationService.Interfaces
 {
-    interface IPostService
+    public interface IPostService
     {
-        public List<PostDTO> GetAll();
+        public List<SimplifiedPostDTO> GetAll(int userID);
+        public PostDTO GetByID(int id, int userID);
+        public void LikeOrUnlikePost(int id, int userID);
     }
 }

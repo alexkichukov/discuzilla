@@ -13,5 +13,14 @@ namespace APIGateway.Extensions
             
             return user.FindFirst("username")!.Value;
         }
+
+        public static int GetUserID(this HttpContext context)
+        {
+            ClaimsIdentity? user = context.User.Identity as ClaimsIdentity;
+
+            if (user == null || user.FindFirst("id") == null) throw new Exception("Invalid user");
+
+            return Int32.Parse(user.FindFirst("id")!.Value);
+        }
     }
 }

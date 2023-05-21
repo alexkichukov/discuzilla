@@ -16,17 +16,14 @@ namespace ApplicationService.DTOs
 			return !String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(Email);
 		}
 
-		public static UserDTO FromUser(User user)
+		public UserDTO(User user)
 		{
-            return new UserDTO()
-			{
-				ID = user.ID,
-				Username = user.Username,
-				Email = user.Email,
-				Points = user.Points,
-				CommentLikes = user.CommentLikes.Select(x => x.CommentID).ToList(),
-				PostLikes = user.PostLikes.Select(x => x.PostID).ToList(),
-			};
+			ID = user.ID;
+			Username = user.Username;
+			Email = user.Email;
+			Points = user.Points;
+			CommentLikes = user.CommentLikes.Select(x => x.CommentID).ToList();
+			PostLikes = user.PostLikes.Select(x => x.PostID).ToList();
 		}
 	}
 }

@@ -15,9 +15,7 @@ namespace ApplicationService.Implementations
             using (UnitOfWork unitOfWork = new())
             {
                 foreach (User user in unitOfWork.UserRepository.Get())
-                {
-                    users.Add(UserDTO.FromUser(user));
-                }
+                    users.Add(new(user));
             }
 
             return users;
@@ -50,7 +48,7 @@ namespace ApplicationService.Implementations
                 unitOfWork.Save();
 
                 // Create DTO from user
-                userDTO = UserDTO.FromUser(user);
+                userDTO = new(user);
             }
 
             return userDTO;
@@ -68,38 +66,54 @@ namespace ApplicationService.Implementations
 
                 if (user == null) throw new Exception("No such user found");
 
-                if (BC.Verify(loginUserDTO.Password, user.Password)) userDTO = UserDTO.FromUser(user);
+                if (BC.Verify(loginUserDTO.Password, user.Password)) userDTO = new(user);
                 else throw new Exception("Incorrect password");
             }
 
             return userDTO;
         }
 
-        public UserDTO GetByID(int ID)
+        public UserDTO GetByID(int userID)
         {
             UserDTO userDTO;
 
             using (UnitOfWork unitOfWork = new())
             {
-                User? user = unitOfWork.UserRepository.GetByID(ID);
+                User? user = unitOfWork.UserRepository.Get(u => u.ID == userID).FirstOrDefault();
 
                 if (user == null) throw new Exception("No such user found");
 
-                userDTO = UserDTO.FromUser(user);
+                userDTO = new(user);
             }
 
             return userDTO;
         }
 
-        public bool DeleteUser(int ID)
+        public UserDTO GetByUsername(string username)
+        {
+            UserDTO userDTO;
+
+            using (UnitOfWork unitOfWork = new())
+            {
+                User? user = unitOfWork.UserRepository.Get(u => u.Username == username).FirstOrDefault();
+
+                if (user == null) throw new Exception("No such user found");
+
+                userDTO = new(user);
+            }
+
+            return userDTO;
+        }
+
+        public bool DeleteUser(int userID)
         {
             using (UnitOfWork unitOfWork = new())
             {
-                User userToDelete = unitOfWork.UserRepository.GetByID(ID);
+                User userToDelete = unitOfWork.UserRepository.GetByID(userID);
 
                 if (userToDelete == null) return false;
 
-                unitOfWork.UserRepository.Delete(ID);
+                unitOfWork.UserRepository.Delete(userToDelete);
                 unitOfWork.Save();
             }
 
