@@ -23,7 +23,7 @@ namespace ApplicationService.Implementations
 
         public UserDTO RegisterUser(RegisterUserDTO registerUserDTO)
         {
-            if (!registerUserDTO.Validate()) throw new Exception("Invalid DTO");
+            if (!registerUserDTO.Validate()) throw new Exception("Invalid data");
 
             UserDTO userDTO;
 
@@ -33,7 +33,7 @@ namespace ApplicationService.Implementations
                 User? alreadyRegisteredUser = unitOfWork.UserRepository.Get(u => u.Email == registerUserDTO.Email || u.Username == registerUserDTO.Username).FirstOrDefault();
                 if (alreadyRegisteredUser != null)
                 {
-                    throw new Exception("User already registered.");
+                    throw new Exception("User already registered");
                 }
 
                 // Add new user

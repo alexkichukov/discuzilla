@@ -24,7 +24,7 @@ namespace ApplicationService.DTOs
             Body = post.Body;
             UserID = post.UserID;
             Likes = post.Likes.Select(x => x.UserID).ToList();
-            Comments = post.Comments.Select(x => new CommentDTO(x)).ToList();
+            Comments = post.Comments.Select(x => new CommentDTO(x, userID)).ToList();
             IsLiked = post.Likes.Where(x => x.UserID == userID).Any();
         }
     }
