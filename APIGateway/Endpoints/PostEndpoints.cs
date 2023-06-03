@@ -13,79 +13,78 @@ namespace APIGateway.Endpoints
             // Get all posts
             app.MapGet("posts", [Authorize] (IPostService _postService, HttpContext context) =>
             {
-                var posts = _postService.GetAll(context.GetUserID());
+                var posts = _postService.GetAllPosts(context.GetUserID());
                 return posts;
             });
 
             // Get a post by id
-            app.MapGet("post/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int postID) =>
+            app.MapGet("posts/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int postID) =>
             {
-                try
-                {
-                    var post = _postService.GetByID(postID, context.GetUserID());
-                    return Results.Ok(post);
-                }
-                catch (Exception ex)
-                {
-                    return Results.NotFound(ex.Message);
-                }
+                var post = _postService.GetPost(postID, context.GetUserID());
+                return Results.Ok(post);
             });
 
             // Like or unlike a post
-            app.MapGet("post/{id:int}/like", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int postID) =>
+            app.MapPut("posts/{id:int}/like", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int postID) =>
             {
-                try
-                {
-                    var post = _postService.GetByID(postID, context.GetUserID());
-                    _postService.LikeOrUnlikePost(post.ID, context.GetUserID());
-                    return Results.Ok();
-                }
-                catch (Exception ex)
-                {
-                    return Results.NotFound(ex.Message);
-                }
+                _postService.LikeOrUnlikePost(postID, context.GetUserID());
+                return Results.Ok();
             });
 
             // Create a post
-            app.MapPost("post", [Authorize] (IPostService _postService, HttpContext context, CreatePostDTO postToCreate) =>
+            app.MapPost("posts", [Authorize] (IPostService _postService, HttpContext context, CreatePostDTO postToCreate) =>
             {
-                try
-                {
-                    var post = _postService.CreatePost(postToCreate, context.GetUserID());
-                    return Results.Ok(post);
-                }
-                catch (Exception ex)
-                {
-                    return Results.BadRequest(ex.Message);
-                }
+                var post = _postService.CreatePost(postToCreate, context.GetUserID());
+                return Results.Ok(post);
             });
 
             // Delete a post
-            app.MapDelete("post/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int postID) =>
+            app.MapDelete("posts/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int postID) =>
             {
-                try
-                {
-                    _postService.DeletePost(postID, context.GetUserID());
-                    return Results.Ok();
-                }
-                catch (Exception ex)
-                {
-                    return Results.NotFound(ex.Message);
-                }
+                _postService.DeletePost(postID, context.GetUserID());
+                return Results.Ok();
+            });
+
+            // Update a post
+            app.MapPut("posts/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromBody] CreatePostDTO postToUpdate, [FromRoute(Name = "id")] int commentID) =>
+            {
+                var comment = _postService.UpdatePost(postToUpdate, commentID, context.GetUserID());
+                return Results.Ok(comment);
             });
 
             // Create a comment
-            app.MapPost("post/{id:int}/comment", [Authorize] (IPostService _postService, HttpContext context, [FromBody] CreateCommentDTO commentToCreate, [FromRoute(Name = "id")] int postID) =>
+            app.MapPost("posts/{id:int}/comment", [Authorize] (IPostService _postService, HttpContext context, [FromBody] CreateCommentDTO commentToCreate, [FromRoute(Name = "id")] int postID) =>
             {
-                try
-                {
-                    var comment = _postService.CreateComment(commentToCreate, postID, context.GetUserID());
-                    return Results.Ok(comment);
-                }
-                catch (Exception ex)
-                {
-                    return Results.BadRequest(ex.Message);
-                }
+                var comment = _postService.CreateComment(commentToCreate, postID, context.GetUserID());
+                return Results.Ok(comment);
+            });
+
+            // Delete a comment
+            app.MapDelete("comments/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int commentID) =>
+            {
+                _postService.DeleteComment(commentID, context.GetUserID());
+                return Results.Ok();
+            });
+
+            // Update a comment
+            app.MapPut("comments/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromBody] CreateCommentDTO commentToUpdate, [FromRoute(Name = "id")] int commentID) =>
+            {
+                var comment = _postService.UpdateComment(commentToUpdate, commentID, context.GetUserID());
+                return Results.Ok(comment);
+            });
+
+            // Like or unlike a post
+            app.MapPut("comments/{id:int}/like", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int commentID) =>
+            {
+                _postService.LikeOrUnlikeComment(commentID, context.GetUserID());
+                return Results.Ok();
+            });
+
+            // Get a post by id
+            app.MapGet("comments/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int commentID) =>
+            {
+                var post = _postService.GetComment(commentID, context.GetUserID());
+                return Results.Ok(post);
             });
         }
     }

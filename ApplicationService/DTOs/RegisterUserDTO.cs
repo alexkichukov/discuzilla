@@ -8,7 +8,7 @@
 
 		public bool Validate()
 		{
-			return !String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(Email);
+			return !String.IsNullOrEmpty(Username);
 		}
 	}
 }

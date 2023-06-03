@@ -20,7 +20,7 @@ namespace APIGateway.Endpoints
                     Subject = new ClaimsIdentity(new[] {
                         new Claim("id", user.ID.ToString()),
                         new Claim("username", user.Username),
-                        new Claim("email", user.Email ?? ""),
+                        new Claim("email", user.Email ?? "")
                     }),
                     Expires = DateTime.UtcNow.AddDays(7),
                     Issuer = config["Jwt:Issuer"],
@@ -35,33 +35,33 @@ namespace APIGateway.Endpoints
             }
 
             // Login
-            app.MapPost("/login", (IUserService _userService, LoginUserDTO user) =>
+            app.MapPost("/login", (IUserService _userService, HttpContext context, LoginUserDTO user) =>
             {
-                try
+                UserDTO loggedInUser = _userService.Login(user);
+                string token = GenerateToken(loggedInUser);
+                return Results.Ok(new
                 {
-                    UserDTO loggedInUser = _userService.Login(user);
-                    string token = GenerateToken(loggedInUser);
-                    return Results.Ok(token);
-                }
-                catch
-                {
-                    return Results.Unauthorized();
-                }
+                    id = loggedInUser.ID,
+                    email = loggedInUser.Email,
+                    username = loggedInUser.Username,
+                    points = loggedInUser.Points,
+                    token
+                });
             });
 
             // Register
             app.MapPost("/register", (IUserService _userService, RegisterUserDTO user) =>
             {
-                try
+                UserDTO registeredUser = _userService.RegisterUser(user);
+                string token = GenerateToken(registeredUser);
+                return Results.Ok(new
                 {
-                    UserDTO registeredUser = _userService.RegisterUser(user);
-                    string token = GenerateToken(registeredUser);
-                    return Results.Ok(token);
-                }
-                catch
-                {
-                    return Results.Unauthorized();
-                }
+                    id = registeredUser.ID,
+                    email = registeredUser.Email,
+                    username = registeredUser.Username,
+                    points = registeredUser.Points,
+                    token
+                });
             });
         }
     }

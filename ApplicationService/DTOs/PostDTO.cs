@@ -7,14 +7,15 @@ namespace ApplicationService.DTOs
 		public int ID { get; set; }
 		public string Title { get; set; } = null!;
         public string Body { get; set; } = null!;
-		public int UserID { get; set; }
-        public List<int> Likes { get; set; } = null!;
+        public SimplifiedUserDTO Author { get; set; }
+        public int LikeCount { get; set; }
         public List<CommentDTO> Comments { get; set; } = null!;
         public bool IsLiked { get; set; }
+        public DateTime Date { get; set; }
 
         public bool Validate()
 		{
-			return !String.IsNullOrEmpty(Title) && !String.IsNullOrEmpty(Body);
+			return !string.IsNullOrEmpty(Title) && !string.IsNullOrEmpty(Body);
 		}
 
         public PostDTO(Post post, int userID)
@@ -22,10 +23,11 @@ namespace ApplicationService.DTOs
             ID = post.ID;
             Title = post.Title;
             Body = post.Body;
-            UserID = post.UserID;
-            Likes = post.Likes.Select(x => x.UserID).ToList();
+            Author = new SimplifiedUserDTO(post.User);
+            LikeCount = post.Likes.Count;
             Comments = post.Comments.Select(x => new CommentDTO(x, userID)).ToList();
             IsLiked = post.Likes.Where(x => x.UserID == userID).Any();
+            Date = post.CreatedOn;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using ApplicationService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Xml.Linq;
 
 namespace APIGateway.Endpoints
 {
@@ -19,29 +18,15 @@ namespace APIGateway.Endpoints
             // Get user by id
             app.MapGet("user/{id:int}", [Authorize] (IUserService _userService, [FromRoute(Name = "id")] int userID) =>
             {
-                try
-                {
-                    var user = _userService.GetByID(userID);
-                    return Results.Ok(user);
-                }
-                catch (Exception ex)
-                {
-                    return Results.NotFound(ex.Message);
-                }
+                var user = _userService.GetByID(userID);
+                return Results.Ok(user);
             });
 
             // Get user by username
             app.MapGet("user/{username}", [Authorize] (IUserService _userService, string username) =>
             {
-                try
-                {
-                    var user = _userService.GetByUsername(username);
-                    return Results.Ok(user);
-                }
-                catch (Exception ex)
-                {
-                    return Results.NotFound(ex.Message);
-                }
+                var user = _userService.GetByUsername(username);
+                return Results.Ok(user);
             });
         }
     }

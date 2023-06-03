@@ -18,7 +18,7 @@ namespace Repository.Implementations
         public virtual IEnumerable<TEntity> Get(
             Expression<Func<TEntity, bool>>? filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-            bool eager = true)
+            string includeProperties = "")
         {
             IQueryable<TEntity> query = dbSet;
 
@@ -27,16 +27,9 @@ namespace Repository.Implementations
                 query = query.Where(filter);
             }
 
-            // Include all navigation properties by default
-            if (eager)
+            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                var navigations = context.Model.FindEntityType(typeof(TEntity))!
-                    .GetDerivedTypesInclusive()
-                    .SelectMany(type => type.GetNavigations())
-                    .Distinct();
-
-                foreach (var property in navigations)
-                    query = query.Include(property.Name);
+                query = query.Include(includeProperty);
             }
 
             if (orderBy != null)

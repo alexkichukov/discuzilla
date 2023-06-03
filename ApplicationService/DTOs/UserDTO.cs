@@ -11,11 +11,6 @@ namespace ApplicationService.DTOs
         public List<int> PostLikes { get; set; } = new();
 		public List<int> CommentLikes { get; set; } = new();
 
-        public bool Validate()
-		{
-			return !String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(Email);
-		}
-
 		public UserDTO(User user)
 		{
 			ID = user.ID;

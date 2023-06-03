@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Models
 {
@@ -23,7 +22,7 @@ namespace Data.Models
     {
         public int CommentID { get; set; }
         public int UserID { get; set; }
-        public virtual User User { get; set; } = null!;
-        public virtual Comment Comment { get; set; } = null!;
+        public User User { get; set; } = null!;
+        public Comment Comment { get; set; } = null!;
     }
 }

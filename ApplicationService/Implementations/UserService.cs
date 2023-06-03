@@ -1,7 +1,9 @@
 ﻿using ApplicationService.DTOs;
+using ApplicationService.Exceptions;
 using ApplicationService.Interfaces;
 using Data.Models;
 using Repository.Implementations;
+using System.Net;
 using BC = BCrypt.Net.BCrypt;
 
 namespace ApplicationService.Implementations
@@ -23,7 +25,7 @@ namespace ApplicationService.Implementations
 
         public UserDTO RegisterUser(RegisterUserDTO registerUserDTO)
         {
-            if (!registerUserDTO.Validate()) throw new Exception("Invalid data");
+            if (!registerUserDTO.Validate()) throw new ServiceException("Invalid data", HttpStatusCode.BadRequest);
 
             UserDTO userDTO;
 
@@ -33,7 +35,7 @@ namespace ApplicationService.Implementations
                 User? alreadyRegisteredUser = unitOfWork.UserRepository.Get(u => u.Email == registerUserDTO.Email || u.Username == registerUserDTO.Username).FirstOrDefault();
                 if (alreadyRegisteredUser != null)
                 {
-                    throw new Exception("User already registered");
+                    throw new ServiceException("User already registered", HttpStatusCode.Conflict);
                 }
 
                 // Add new user
@@ -56,7 +58,7 @@ namespace ApplicationService.Implementations
 
         public UserDTO Login(LoginUserDTO loginUserDTO)
         {
-            if (!loginUserDTO.Validate()) throw new Exception("Invalid DTO");
+            if (!loginUserDTO.Validate()) throw new ServiceException("Invalid data", HttpStatusCode.BadRequest);
 
             UserDTO userDTO;
 
@@ -64,10 +66,10 @@ namespace ApplicationService.Implementations
             {
                 User? user = unitOfWork.UserRepository.Get(user => user.Username == loginUserDTO.Username).FirstOrDefault();
 
-                if (user == null) throw new Exception("No such user found");
+                if (user == null) throw new ServiceException("No such user found", HttpStatusCode.NotFound);
 
                 if (BC.Verify(loginUserDTO.Password, user.Password)) userDTO = new(user);
-                else throw new Exception("Incorrect password");
+                else throw new ServiceException("Incorrect password", HttpStatusCode.Unauthorized);
             }
 
             return userDTO;
@@ -81,7 +83,7 @@ namespace ApplicationService.Implementations
             {
                 User? user = unitOfWork.UserRepository.Get(u => u.ID == userID).FirstOrDefault();
 
-                if (user == null) throw new Exception("No such user found");
+                if (user == null) throw new ServiceException("No such user found", HttpStatusCode.NotFound);
 
                 userDTO = new(user);
             }
@@ -97,7 +99,7 @@ namespace ApplicationService.Implementations
             {
                 User? user = unitOfWork.UserRepository.Get(u => u.Username == username).FirstOrDefault();
 
-                if (user == null) throw new Exception("No such user found");
+                if (user == null) throw new ServiceException("No such user found", HttpStatusCode.NotFound);
 
                 userDTO = new(user);
             }
