@@ -21,13 +21,6 @@ namespace APIGateway.Endpoints
                 var user = _userService.GetByID(userID);
                 return Results.Ok(user);
             });
-
-            // Get user by username
-            app.MapGet("user/{username}", [Authorize] (IUserService _userService, string username) =>
-            {
-                var user = _userService.GetByUsername(username);
-                return Results.Ok(user);
-            });
         }
     }
 }

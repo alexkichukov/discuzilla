@@ -1,4 +1,6 @@
 ﻿using ApplicationService.DTOs;
+using Data.Models;
+using System.Linq.Expressions;
 
 namespace ApplicationService.Interfaces
 {
@@ -13,6 +15,7 @@ namespace ApplicationService.Interfaces
         public void DeletePost(int postID, int userID);
 
         // Comments
+        public List<CommentDTO> GetAllComments(int userID);
         public CommentDTO GetComment(int commentID, int userID);
         public CommentDTO CreateComment(CreateCommentDTO commentToCreate, int postID, int userID);
         public CommentDTO UpdateComment(CreateCommentDTO commentToUpdate, int commentID, int userID);

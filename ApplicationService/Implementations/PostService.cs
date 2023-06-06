@@ -9,15 +9,14 @@ namespace ApplicationService.Implementations
 {
     public class PostService : IPostService
     {
+        // Posts
         public List<SimplifiedPostDTO> GetAllPosts(int userID)
         {
-            List<SimplifiedPostDTO> posts = new();
+            using UnitOfWork unitOfWork = new();
 
-            using (UnitOfWork unitOfWork = new())
-            {
-                foreach (Post post in unitOfWork.PostRepository.Get(null, null, "User,Likes,Comments"))
-                    posts.Add(new(post, userID));
-            }
+            List<SimplifiedPostDTO> posts = new();
+            IEnumerable<Post> data = unitOfWork.PostRepository.Get(include: "User,Likes,Comments");
+            foreach (Post post in data) posts.Add(new(post, userID));
 
             return posts;
         }
@@ -25,7 +24,7 @@ namespace ApplicationService.Implementations
         public PostDTO GetPost(int postID, int userID)
         {
             using UnitOfWork unitOfWork = new();
-            Post? post = unitOfWork.PostRepository.Get(p => p.ID == postID, null, "User,Likes,Comments,Comments.Likes").FirstOrDefault();
+            Post? post = unitOfWork.PostRepository.Get(p => p.ID == postID, null, "User,Likes,Comments,Comments.Likes,Comments.User").FirstOrDefault();
 
             if (post == null) throw new ServiceException("No such post found", HttpStatusCode.NotFound);
 
@@ -95,6 +94,17 @@ namespace ApplicationService.Implementations
             unitOfWork.Save();
         }
 
+        // Comments
+        public List<CommentDTO> GetAllComments(int userID)
+        {
+            using UnitOfWork unitOfWork = new();
+
+            List<CommentDTO> comments = new();
+            IEnumerable<Comment> data = unitOfWork.CommentRepository.Get(include: "Post,User,Likes");
+            foreach (Comment comment in data) comments.Add(new(comment, userID));
+
+            return comments;
+        }
         public CommentDTO GetComment(int commentID, int userID)
         {
             using UnitOfWork unitOfWork = new();

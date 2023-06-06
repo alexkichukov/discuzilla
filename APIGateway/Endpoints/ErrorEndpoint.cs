@@ -1,5 +1,6 @@
 ﻿using ApplicationService.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
+using System.Net;
 
 namespace APIGateway.Endpoints
 {
@@ -15,6 +16,10 @@ namespace APIGateway.Endpoints
                 if (exception is ServiceException serviceException)
                 {
                     return Results.Json(serviceException.Json, statusCode: serviceException.Code);
+                }
+                else if (exception is BadHttpRequestException badrequestException)
+                {   
+                    return Results.Json(new { code = badrequestException.StatusCode, message = "Bad Request" }, statusCode: badrequestException.StatusCode);
                 }
                 else
                 {

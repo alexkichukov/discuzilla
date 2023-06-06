@@ -2,6 +2,8 @@
 using Data.Context;
 using System.Linq.Expressions;
 
+
+
 namespace Repository.Implementations
 {
     public class GenericRepository<TEntity> where TEntity : class
@@ -18,7 +20,7 @@ namespace Repository.Implementations
         public virtual IEnumerable<TEntity> Get(
             Expression<Func<TEntity, bool>>? filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-            string includeProperties = "")
+            string include = "", int take = -1, int skip = -1)
         {
             IQueryable<TEntity> query = dbSet;
 
@@ -27,9 +29,19 @@ namespace Repository.Implementations
                 query = query.Where(filter);
             }
 
-            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var includeProperty in include.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 query = query.Include(includeProperty);
+            }
+
+            if (take != -1)
+            {
+                query = query.Take(take);
+            }
+
+            if (skip != -1)
+            {
+                query = query.Skip(skip);
             }
 
             if (orderBy != null)
