@@ -1,6 +1,5 @@
 ﻿using ApplicationService.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
-using System.Net;
 
 namespace APIGateway.Endpoints
 {

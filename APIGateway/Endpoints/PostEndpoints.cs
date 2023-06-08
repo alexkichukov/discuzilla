@@ -3,7 +3,6 @@ using ApplicationService.DTOs;
 using ApplicationService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace APIGateway.Endpoints
 {
@@ -34,9 +33,13 @@ namespace APIGateway.Endpoints
             });
 
             // Like or unlike a post
-            app.MapPut("posts/{id:int}/like", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int postID) =>
+            app.MapPut("posts/{id:int}/like", [Authorize] (IPostService _postService, IUserService _userService, HttpContext context, [FromRoute(Name = "id")] int postID) =>
             {
-                _postService.LikeOrUnlikePost(postID, context.GetUserID());
+                int userID = context.GetUserID();
+                PostDTO post = _postService.GetPost(postID, userID);
+                _postService.LikeOrUnlikePost(postID, userID);
+                if (post.Author.ID != userID)
+                    _userService.AddPoints(post.Author.ID, post.IsLiked ? -1 : 1);
                 return Results.Ok();
             });
 
@@ -83,9 +86,13 @@ namespace APIGateway.Endpoints
             });
 
             // Like or unlike a comment
-            app.MapPut("comments/{id:int}/like", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int commentID) =>
+            app.MapPut("comments/{id:int}/like", [Authorize] (IPostService _postService, IUserService _userService, HttpContext context, [FromRoute(Name = "id")] int commentID) =>
             {
-                _postService.LikeOrUnlikeComment(commentID, context.GetUserID());
+                int userID = context.GetUserID();
+                CommentDTO comment = _postService.GetComment(commentID, userID);
+                _postService.LikeOrUnlikeComment(commentID, userID);
+                if (comment.Author.ID != userID)
+                    _userService.AddPoints(comment.Author.ID, comment.IsLiked ? -1 : 1);
                 return Results.Ok();
             });
 

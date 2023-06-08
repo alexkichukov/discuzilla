@@ -1,4 +1,6 @@
-﻿using ApplicationService.Interfaces;
+﻿using APIGateway.Extensions;
+using ApplicationService.DTOs;
+using ApplicationService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +22,28 @@ namespace APIGateway.Endpoints
             {
                 var user = _userService.GetByID(userID);
                 return Results.Ok(user);
+            });
+
+            // User leaderboard
+            app.MapGet("leaderboard", [Authorize] (IUserService _userService, int? page) =>
+            {
+                int pageSize = 10;
+                int p = page ?? 1;
+                var users = _userService.GetAll().OrderByDescending(u => u.Points);
+
+                return new
+                {
+                    page = p,
+                    totalPages = (users.Count() + pageSize - 1) / pageSize,
+                    users = users.Skip(pageSize * (p - 1)).Take(pageSize)
+                };
+            });
+
+            // Update user
+            app.MapPut("user", [Authorize] (IUserService _userService, HttpContext context, [FromBody] UpdateUserDTO updateUser) =>
+            {
+                _userService.UpdateUser(updateUser, context.GetUserID());
+                return Results.Ok();
             });
         }
     }

@@ -39,14 +39,7 @@ namespace APIGateway.Endpoints
             {
                 UserDTO loggedInUser = _userService.Login(user);
                 string token = GenerateToken(loggedInUser);
-                return Results.Ok(new
-                {
-                    id = loggedInUser.ID,
-                    email = loggedInUser.Email,
-                    username = loggedInUser.Username,
-                    points = loggedInUser.Points,
-                    token
-                });
+                return Results.Ok(new { id = loggedInUser.ID, token });
             });
 
             // Register
@@ -54,14 +47,7 @@ namespace APIGateway.Endpoints
             {
                 UserDTO registeredUser = _userService.RegisterUser(user);
                 string token = GenerateToken(registeredUser);
-                return Results.Ok(new
-                {
-                    id = registeredUser.ID,
-                    email = registeredUser.Email,
-                    username = registeredUser.Username,
-                    points = registeredUser.Points,
-                    token
-                });
+                return Results.Ok(new { id = registeredUser.ID, token });
             });
         }
     }
