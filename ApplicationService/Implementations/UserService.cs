@@ -87,9 +87,13 @@ namespace ApplicationService.Implementations
         public bool DeleteUser(int userID)
         {
             using UnitOfWork unitOfWork = new();
-            User userToDelete = unitOfWork.UserRepository.GetByID(userID);
+            User? userToDelete = unitOfWork.UserRepository.Get(u => u.ID == userID, include: "Posts,Comments,PostLikes,CommentLikes").FirstOrDefault();
+
+            Console.WriteLine("hello");
 
             if (userToDelete == null) return false;
+
+            Console.WriteLine("test");
 
             unitOfWork.UserRepository.Delete(userToDelete);
             unitOfWork.Save();

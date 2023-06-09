@@ -45,6 +45,13 @@ namespace APIGateway.Endpoints
                 _userService.UpdateUser(updateUser, context.GetUserID());
                 return Results.Ok();
             }).WithTags("Users");
+
+            // Delete a post
+            app.MapDelete("user", [Authorize] (IUserService _userService, HttpContext context) =>
+            {
+                _userService.DeleteUser(context.GetUserID());
+                return Results.Ok();
+            }).WithTags("Users");
         }
     }
 }
