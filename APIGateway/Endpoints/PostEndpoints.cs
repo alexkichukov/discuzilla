@@ -23,14 +23,14 @@ namespace APIGateway.Endpoints
                     totalPages = (posts.Count() + pageSize - 1) / pageSize,
                     posts = posts.Skip(pageSize * (p - 1)).Take(pageSize)
                 };
-            });
+            }).WithTags("Posts");
 
             // Get a post by id
             app.MapGet("posts/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int postID) =>
             {
                 var post = _postService.GetPost(postID, context.GetUserID());
                 return Results.Ok(post);
-            });
+            }).WithTags("Posts");
 
             // Like or unlike a post
             app.MapPut("posts/{id:int}/like", [Authorize] (IPostService _postService, IUserService _userService, HttpContext context, [FromRoute(Name = "id")] int postID) =>
@@ -41,49 +41,49 @@ namespace APIGateway.Endpoints
                 if (post.Author.ID != userID)
                     _userService.AddPoints(post.Author.ID, post.IsLiked ? -1 : 1);
                 return Results.Ok();
-            });
+            }).WithTags("Posts");
 
             // Create a post
             app.MapPost("posts", [Authorize] (IPostService _postService, HttpContext context, CreatePostDTO postToCreate) =>
             {
                 var post = _postService.CreatePost(postToCreate, context.GetUserID());
                 return Results.Ok(post);
-            });
+            }).WithTags("Posts");
 
             // Delete a post
             app.MapDelete("posts/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int postID) =>
             {
                 _postService.DeletePost(postID, context.GetUserID());
                 return Results.Ok();
-            });
+            }).WithTags("Posts");
 
             // Update a post
             app.MapPut("posts/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromBody] CreatePostDTO postToUpdate, [FromRoute(Name = "id")] int commentID) =>
             {
                 var comment = _postService.UpdatePost(postToUpdate, commentID, context.GetUserID());
                 return Results.Ok(comment);
-            });
+            }).WithTags("Posts");
 
             // Create a comment
             app.MapPost("comments", [Authorize] (IPostService _postService, HttpContext context, [FromBody] CreateCommentDTO commentToCreate, int post) =>
             {
                 var comment = _postService.CreateComment(commentToCreate, post, context.GetUserID());
                 return Results.Ok(comment);
-            });
+            }).WithTags("Comments");
 
             // Delete a comment
             app.MapDelete("comments/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int commentID) =>
             {
                 _postService.DeleteComment(commentID, context.GetUserID());
                 return Results.Ok();
-            });
+            }).WithTags("Comments");
 
             // Update a comment
             app.MapPut("comments/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromBody] CreateCommentDTO commentToUpdate, [FromRoute(Name = "id")] int commentID) =>
             {
                 var comment = _postService.UpdateComment(commentToUpdate, commentID, context.GetUserID());
                 return Results.Ok(comment);
-            });
+            }).WithTags("Comments");
 
             // Like or unlike a comment
             app.MapPut("comments/{id:int}/like", [Authorize] (IPostService _postService, IUserService _userService, HttpContext context, [FromRoute(Name = "id")] int commentID) =>
@@ -94,16 +94,16 @@ namespace APIGateway.Endpoints
                 if (comment.Author.ID != userID)
                     _userService.AddPoints(comment.Author.ID, comment.IsLiked ? -1 : 1);
                 return Results.Ok();
-            });
+            }).WithTags("Comments");
 
             // Get a comment by id
             app.MapGet("comments/{id:int}", [Authorize] (IPostService _postService, HttpContext context, [FromRoute(Name = "id")] int commentID) =>
             {
                 var post = _postService.GetComment(commentID, context.GetUserID());
                 return Results.Ok(post);
-            });
+            }).WithTags("Comments");
 
-            // Get all posts
+            // Get all comments
             app.MapGet("comments", [Authorize] (IPostService _postService, HttpContext context, int? page, int author) =>
             {
                 int pageSize = 10;
@@ -116,7 +116,7 @@ namespace APIGateway.Endpoints
                     totalPages = (comments.Count() + pageSize - 1) / pageSize,
                     comments = comments.Skip(pageSize * (p - 1)).Take(pageSize)
                 };
-            });
+            }).WithTags("Comments");
         }
     }
 }

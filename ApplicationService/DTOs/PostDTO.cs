@@ -13,11 +13,6 @@ namespace ApplicationService.DTOs
         public bool IsLiked { get; set; }
         public DateTime Date { get; set; }
 
-        public bool Validate()
-		{
-			return !string.IsNullOrEmpty(Title) && !string.IsNullOrEmpty(Body);
-		}
-
         public PostDTO(Post post, int userID)
         {
             ID = post.ID;

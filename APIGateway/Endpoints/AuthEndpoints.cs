@@ -40,7 +40,7 @@ namespace APIGateway.Endpoints
                 UserDTO loggedInUser = _userService.Login(user);
                 string token = GenerateToken(loggedInUser);
                 return Results.Ok(new { id = loggedInUser.ID, token });
-            });
+            }).WithTags("Auth");
 
             // Register
             app.MapPost("/register", (IUserService _userService, RegisterUserDTO user) =>
@@ -48,7 +48,7 @@ namespace APIGateway.Endpoints
                 UserDTO registeredUser = _userService.RegisterUser(user);
                 string token = GenerateToken(registeredUser);
                 return Results.Ok(new { id = registeredUser.ID, token });
-            });
+            }).WithTags("Auth");
         }
     }
 }

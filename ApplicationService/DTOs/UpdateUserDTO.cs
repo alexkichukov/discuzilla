@@ -9,7 +9,7 @@ namespace ApplicationService.DTOs
 
         public bool Validate()
         {
-            return !String.IsNullOrEmpty(Username);
+            return !String.IsNullOrEmpty(Username) && Username.Length >= 3;
         }
     }
 }

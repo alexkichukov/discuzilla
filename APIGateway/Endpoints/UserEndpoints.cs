@@ -15,14 +15,14 @@ namespace APIGateway.Endpoints
             {
                 var users = _userService.GetAll();
                 return Results.Ok(users);
-            });
+            }).WithTags("Users");
 
             // Get user by id
             app.MapGet("user/{id:int}", [Authorize] (IUserService _userService, [FromRoute(Name = "id")] int userID) =>
             {
                 var user = _userService.GetByID(userID);
                 return Results.Ok(user);
-            });
+            }).WithTags("Users");
 
             // User leaderboard
             app.MapGet("leaderboard", [Authorize] (IUserService _userService, int? page) =>
@@ -37,14 +37,14 @@ namespace APIGateway.Endpoints
                     totalPages = (users.Count() + pageSize - 1) / pageSize,
                     users = users.Skip(pageSize * (p - 1)).Take(pageSize)
                 };
-            });
+            }).WithTags("Users");
 
             // Update user
             app.MapPut("user", [Authorize] (IUserService _userService, HttpContext context, [FromBody] UpdateUserDTO updateUser) =>
             {
                 _userService.UpdateUser(updateUser, context.GetUserID());
                 return Results.Ok();
-            });
+            }).WithTags("Users");
         }
     }
 }
