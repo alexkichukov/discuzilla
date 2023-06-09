@@ -11,12 +11,19 @@ namespace APIGateway.Endpoints
         public static void UsePostEndpoints(this IEndpointRouteBuilder app)
         {
             // Get all posts
-            app.MapGet("posts", [Authorize] (IPostService _postService, HttpContext context, int? page, int? author) =>
+            app.MapGet("posts", [Authorize] (IPostService _postService, HttpContext context, int? page, int? author, string? search) =>
             {
                 int pageSize = 10;
                 int p = page ?? 1;
                 int a = author ?? -1;
                 var posts = _postService.GetAllPosts(context.GetUserID()).Where(p => a == -1 || p.Author.ID == a);
+
+
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    search = search.ToLower();
+                    posts = posts.Where(p => p.Body.ToLower().Contains(search) || p.Title.ToLower().Contains(search) || p.Author.Username.ToLower().Contains(search));
+                }
 
                 return new {
                     page = p,
